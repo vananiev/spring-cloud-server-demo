@@ -25,7 +25,7 @@ Second check may be done by
 ```
 GET http://localhost:8080/app/master
 ```
-Response excludes also `file2.yml`
+Response also excludes `file2.yml`
 ```json
 {
     "name": "app",
