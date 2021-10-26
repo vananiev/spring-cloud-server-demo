@@ -1,0 +1,6 @@
+---
+a: 0
+
+spring.config.import:
+  - file1.yml
+  - dir/file2.yml
