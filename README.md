@@ -1,4 +1,4 @@
-Demo project for spring-cloud/spring-cloud-config#1989
+Demo project for [spring-cloud/spring-cloud-config#1989](https://github.com/spring-cloud/spring-cloud-config/issues/1989)
 
 To run application use
 ```shell
