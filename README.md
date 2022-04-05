@@ -1,56 +1,38 @@
-Demo project for [spring-cloud/spring-cloud-config#1989](https://github.com/spring-cloud/spring-cloud-config/issues/1989)
+Demo project for [spring-cloud/spring-cloud-config#2009](https://github.com/spring-cloud/spring-cloud-config/issues/2009)
 
-To run application use
+Client side test
+[DiscoveryClientConfigDataConfigurationTests.java#L148](https://github.com/spring-cloud/spring-cloud-config/blob/1cd03a05fbfeeaa33dc5b2a611ae89e5e34cf8f8/spring-cloud-config-client/src/test/java/org/springframework/cloud/config/client/DiscoveryClientConfigDataConfigurationTests.java#L148)
+shows client expects `configPath` metadata from the cloud server.
+
+To run application with Spring Cloud 2020.0.5 use
 ```shell
 ./mvnw spring-boot:run -Dspring-boot.run.jvmArguments="-Dspring.cloud.bootstrap.enabled=true"
 ```
 or use Idea configuration 'SpringCloudServerDemoApplication'.
 
-`cloud-conf/app/master/application.yml` imports 2 files
-```yaml
-spring.config.import:
-  - file1.yml
-  - dir/file2.yml
+Check
 ```
-Console output is
+GET http://localhost:8080/eureka/apps
 ```
-[           main] o.s.c.c.s.e.NativeEnvironmentRepository  : Adding property source: Config resource 'file [cloud-conf\app\master\file1.yml]' via location 'file1.yml'
-[           main] o.s.c.c.s.e.NativeEnvironmentRepository  : Adding property source: Config resource 'file [cloud-conf\app\master\application.yml]' via location 'cloud-conf/app/master/'
-[           main] b.c.PropertySourceBootstrapConfiguration : Located property source: [BootstrapPropertySource {name='bootstrapProperties-file:cloud-conf\app\master\file1.yml'}, BootstrapProper
-tySource {name='bootstrapProperties-file:cloud-conf\app\master\application.yml'}]
-```
-So Spring Cloud Config Server ignores `cloud-conf\app\master\dir\file2.yml` import.
+Response contains
+```xml
 
-Second check may be done by
+<metadata>
+    <foo>bar</foo>
+    <management.port>8080</management.port>
+    <configPath>cloud-config</configPath>
+</metadata>
 ```
-GET http://localhost:8080/app/master
-```
-Response excludes also `file2.yml`
-```json
-{
-    "name": "app",
-    "profiles": [ "master" ],
-    "label": null,
-    "version": null,
-    "state": null,
-    "propertySources":
-    [
-        {
-            "name": "file:cloud-conf\\app\\master\\file1.yml",
-            "source":
-            {
-                "b": 1
-            }
-        },
-        {
-            "name": "file:cloud-conf\\app\\master\\application.yml",
-            "source":
-            {
-                "a": 0,
-                "spring.config.import[0]": "file1.yml",
-                "spring.config.import[1]": "dir/file2.yml"
-            }
-        }
-    ]
-}
+This is expected behavior.
+
+For reproduce problem change `spring-boot-starter-parent` version to `2.6.6`, and `spring-cloud.version` to `2021.0.1`.
+
+Run app again and check same url, response is (can't reproduce)
+```xml
+
+<metadata>
+    <foo>bar</foo>
+    <management.port>8080</management.port>
+    <configPath>cloud-config</configPath>
+</metadata>
 ```
